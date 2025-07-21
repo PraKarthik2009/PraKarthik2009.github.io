@@ -1,0 +1,59 @@
+/* poke.css */
+
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background-color: #f4f4f4;
+  overflow-x: hidden;
+}
+
+#secret-zone {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 80px;
+  height: 80px;
+  z-index: 9999;
+  background-color: rgba(255, 0, 0, 0); /* Invisible */
+}
+
+#fake-screen {
+  padding: 20px;
+  text-align: center;
+}
+
+#real-screen {
+  display: none;
+}
+
+#real-screen h1 {
+  text-align: center;
+  margin: 0;
+  padding-top: 20px;
+  font-size: 2em;
+}
+
+/* Section Styling */
+section {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+section h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Elfsight Responsive Container */
+.elfsight-app-84468327-a019-49a2-b287-58e004e72f30,
+.elfsight-app-12345678-abcd-efgh-ijkl-987654321000,
+.elfsight-app-abcdefgh-1234-5678-abcd-1234567890ab {
+  width: 100%;
+  max-width: 90vw;
+  margin: 0 auto;
+  min-height: 500px;
+}
