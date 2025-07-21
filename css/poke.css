@@ -3,7 +3,7 @@
 body {
   margin: 0;
   font-family: sans-serif;
-  background-color: #f4f4f4;
+  background-color: #ffffff;
   overflow-x: hidden;
 }
 
@@ -51,7 +51,9 @@ section h2 {
 /* Elfsight Responsive Container */
 .elfsight-app-84468327-a019-49a2-b287-58e004e72f30,
 .elfsight-app-75d41a13-d578-4f0d-8571-37ff9b28158b,
-.elfsight-app-abcdefgh-1234-5678-abcd-1234567890ab {
+.elfsight-app-8790986b-f6f0-4c28-b5db-24d6302df9f5,
+.elfsight-app-162c169e-4c91-4899-9874-1aa193043840,
+.elfsight-app-5b13cf3a-468a-4ddb-9c49-5f80ac6c1b7e {
   width: 100%;
   max-width: 90vw;
   margin: 0 auto;
