@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Video Gallery</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    .video-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .video-card {
+      background: white;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      width: 300px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .video-card video {
+      width: 100%;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>My Video Gallery</h1>
+  <div class="video-gallery" id="video-gallery"></div>
+
+  <script>
+    // Manually list your video files
+    const videos = [
+      'video1.mp4',
+      'video2.mp4',
+      'trip.mp4'
+    ];
+
+    const gallery = document.getElementById('video-gallery');
+
+    videos.forEach(video => {
+      const videoCard = document.createElement('div');
+      videoCard.className = 'video-card';
+      videoCard.innerHTML = `
+        <video controls>
+          <source src="media/${video}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <p>${video}</p>
+      `;
+      gallery.appendChild(videoCard);
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dictionary Lookup</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+      padding: 50px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    input {
+      padding: 10px;
+      width: 250px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-left: 10px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .result {
+      margin-top: 30px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+
+    .definition {
+      font-size: 18px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Dictionary Lookup</h1>
+
+  <input id="wordInput" placeholder="Enter a word..." />
+  <button onclick="searchWord()">Search</button>
+
+  <div class="result" id="output"></div>
+
+  <script>
+    async function searchWord() {
+      const word = document.getElementById("wordInput").value.trim();
+      const output = document.getElementById("output");
+      output.innerHTML = "Searching...";
+
+      const options = {
+        method: 'GET',
+        headers: {
+          'X-RapidAPI-Key': '2b8d191c29msh9a315aaca6c70c4p165a68jsn72cd0282cb1b',
+          'X-RapidAPI-Host': 'dictionary-by-api-ninjas.p.rapidapi.com'
+        }
+      };
+
+      try {
+        const res = await fetch(`https://dictionary-by-api-ninjas.p.rapidapi.com/v1/dictionary?word=${word}`, options);
+        const data = await res.json();
+
+        if (!data.definition) {
+          output.innerHTML = `<div class="error">No definition found for "${word}"</div>`;
+          return;
+        }
+
+        output.innerHTML = `
+          <strong>Word:</strong> ${word}<br><br>
+          <div class="definition"><strong>Definition:</strong> ${data.definition}</div>
+        `;
+      } catch (err) {
+        output.innerHTML = `<div class="error">Error: ${err.message}</div>`;
+      }
+    }
+  </script>
+
+</body>
+</html>
