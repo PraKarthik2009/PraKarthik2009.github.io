@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+  <title>Webpage not available</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+    <script src="./js/script.js" defer></script>
+  </head>
+  <body>
+  <div id="fake-screen">
+    <h1>Webpage not available</h1>
+    <p><b>The webpage could not be loaded because:</b></p>
+    <p>net::ERR_NAME_NOT_RESOLVED</p>
+  </div>
+   <div id="real-screen">
+<!---- Gallery section Design -->
+    <div class="lightbox">
+      <div class="wrapper">
+        <header>
+          <div class="memory">
+            <i class="uil uil-camera"></i>
+            <span></span>
+          </div>
+          <div class="buttons">
+            <i class="uil uil-import"></i>
+            <i class="close-icon uil uil-times"></i>
+          </div>
+        </header>
+   <div class="preview-img">
+          <div class="img"><img src="" alt="preview-img"></div>
+        </div>
+      </div>
+    </div>
+    <section class="search">
+    
+      <div class="content"> 
+        <div class="search-box">
+          <i class="uil uil-search"></i>
+          <input id="text" type="text" placeholder="Search images">
+        </div>
+      </div>
+    </section>
+
+    <section class="gallery">
+      <nav>
+        <div class="items">
+          <span class="item active" data-name="Images">Images</span>
+          <span class="item" data-name="videos">Videos</span>
+        </div>
+      </nav>
+      <ul class="images"></ul>
+      <button class="load-more">Load More</button>
+    </section>
+  <!-- Tap Zone -->
+  
+   </div>
+<div id="secret-zone"></div>
+<script>
+    let tapCount = 0;
+    let resetTimer;
+
+    document.getElementById("secret-zone").addEventListener("touchstart", () => {
+      tapCount++;
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(() => tapCount = 0, 5000);
+
+      if (tapCount >= 5) {
+        document.getElementById("fake-screen").style.display = "none";
+        document.getElementById("real-screen").style.display = "block";
+      }
+    });
+  </script>
+  </body>
+</html>

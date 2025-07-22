@@ -1,0 +1,26 @@
+<div>
+  <input type="text" id="wordInput" placeholder="Enter a word">
+  <button onclick="lookup()">Define</button>
+</div>
+<div id="definitionBox" style="margin-top: 10px; font-weight: bold;"></div>
+<iframe src="//www.you.com/chat" width="100%" height="600px"></iframe>
+
+<script>
+  function lookup() {
+    const word = document.getElementById("wordInput").value.trim();
+    const output = document.getElementById("definitionBox");
+    output.innerText = "Searching...";
+
+    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
+      .then(res => res.json())
+      .then(data => {
+        const meanings = data[0]?.meanings;
+        if (!meanings) throw new Error("No definitions found.");
+        const def = meanings[0].definitions[0].definition;
+        output.innerText = `📘 ${word}: ${def}`;
+      })
+      .catch(err => {
+        output.innerText = "❌ Could not find meaning.";
+      });
+  }
+</script>
