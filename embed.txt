@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>PDF Gallery</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body {
+      background: #f4f6f8;
+      font-family: system-ui, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 32px auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 6px 24px rgba(8,24,40,0.08);
+      padding: 32px 24px;
+    }
+    h1 {
+      font-size: 2rem;
+      color: #0b84ff;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+    .pdf-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 32px;
+    }
+    .pdf-card {
+      background: #fafbfc;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .pdf-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .pdf-frame {
+      width: 100%;
+      min-width: 280px;
+      max-width: 400px;
+      height: 320px;
+      border: 1px solid #e6e6e6;
+      border-radius: 6px;
+      background: #fff;
+      margin-bottom: 8px;
+      display: block;
+    }
+    @media (max-width: 900px) {
+      .container { padding: 16px 4px; }
+      .pdf-frame { height: 40vw; min-height: 180px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>PDF Gallery</h1>
+    <div id="pdf-gallery" class="pdf-gallery"></div>
+  </div>
+  <script>
+    fetch("drive.json")
+      .then(res => res.json())
+      .then(data => {
+        const gallery = document.getElementById("pdf-gallery");
+        if (!data.length) {
+          gallery.innerHTML = '<span style="color:#888;">No PDFs found.</span>';
+          return;
+        }
+        data.forEach(file => {
+          const card = document.createElement("div");
+          card.className = "pdf-card";
+          const title = document.createElement("div");
+          title.className = "pdf-title";
+          title.textContent = file.name || "Untitled PDF";
+          card.appendChild(title);
+          const iframe = document.createElement("iframe");
+          iframe.className = "pdf-frame";
+          iframe.src = `https://docs.google.com/gview?url=https://drive.google.com/uc?id=${file.id}&embedded=true`;
+          iframe.frameBorder = "0";
+          iframe.allowFullscreen = true;
+          card.appendChild(iframe);
+          gallery.appendChild(card);
+        });
+      })
+      .catch(err => {
+        document.getElementById("pdf-gallery").innerText = "Failed to load PDFs.";
+        console.error(err);
+      });
+  </script>
+</body>
+</html>

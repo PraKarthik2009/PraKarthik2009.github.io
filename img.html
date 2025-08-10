@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Uploadcare Example with Proxy</title>
+  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
+  <style>
+    input[type="file"][role="uploadcare-uploader"] {
+      display: none;
+    }
+    #images-container img, #images-container video {
+      width: 150px;
+      margin: 5px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <input type="file" role="uploadcare-uploader" data-public-key="068cacd5d174bea81cea">
+  <div id="images-container"></div>
+
+  <script>
+    const imagesContainer = document.getElementById('images-container');
+    const limit = 10;
+
+    // Your proxy server
+    const proxyBase = "https://srvr-l70t.onrender.com/proxy";
+
+    // Uploadcare API details
+    const secretKey = "702fbe8e1dddb81163af"; // 🔴 Still visible in frontend!
+    const uploadcareAPI = `https://api.uploadcare.com/files/?stored=true&limit=${limit}&ordering=-datetime_uploaded`;
+
+    // Build final proxy URL with auth header encoded in URL
+    const targetUrl = uploadcareAPI;
+    const proxyUrl = `${proxyBase}?url=${encodeURIComponent(targetUrl)}`;
+
+    // Fetch from proxy with Authorization header manually using fetch()
+   fetch(proxyUrl, {
+  headers: {
+    Authorization: `Uploadcare.Simple 068cacd5d174bea81cea:${secretKey}`,
+    Accept: "application/vnd.uploadcare-v0.7+json"
+  }
+})
+.then(response => response.json())
+.then(data => {
+  console.log('API Response:', data);  // <-- add this line
+  if (data.results && data.results.length > 0) {
+data.results.forEach(file => {
+  console.log('File:', file);
+  const url = file.cdn_url || file.original_file_url || file.url;
+  if (!url) {
+    console.warn('No valid URL for file', file);
+    return;
+  }
+
+  if (file.mime_type.startsWith("video/")) {
+    const video = document.createElement('video');
+    video.src = url;
+    video.controls = true;
+    imagesContainer.appendChild(video);
+  } else {
+    const img = document.createElement('img');
+    img.src = url;
+    imagesContainer.appendChild(img);
+  }
+});
+
+  } else {
+    console.error('No files found');
+  }
+})
+.catch(error => console.error(error));
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hostel Toolbox — Hidden</title>
+
+  <style>
+    /* ---------- global ---------- */
+    :root{
+      --bg:#f4f6f8;
+      --card:#fff;
+      --accent:#0b84ff;
+      --muted:#666;
+      --maxw:1100px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:#111}
+    .container{max-width:var(--maxw);margin:0 auto;padding:18px}
+
+    /* ---------- fake screen ---------- */
+    #fake-screen{
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      background:#fff;
+      color:#000;
+      text-align:center;
+      padding:24px;
+    }
+    #fake-screen h1{font-size:22px;margin:0 0 12px;color:#111}
+    #fake-screen p{margin:6px 0;color:var(--muted)}
+
+    /* ---------- header / layout ---------- */
+    header.app-header{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      background:linear-gradient(90deg,#0b84ff,#2db6ff);
+      color:#fff;padding:14px 18px;border-radius:8px;margin-bottom:16px;
+    }
+    header.app-header h1{font-size:18px;margin:0}
+    header.app-header .sub{opacity:0.95;font-size:13px}
+
+    nav.tools{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+    nav.tools button{
+      background:#fff;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:600;
+      box-shadow:0 1px 2px rgba(0,0,0,0.06)
+    }
+
+    section.tool{
+      background:var(--card);
+      border-radius:10px;
+      padding:14px;
+      margin-bottom:18px;
+      box-shadow:0 6px 18px rgba(8,24,40,0.04);
+    }
+    .tool h2{margin:0 0 12px;font-size:16px}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+
+    /* ---------- video grid ---------- */
+    .video-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap:14px;
+    }
+    .video-card{
+      background:#000;border-radius:8px;overflow:hidden;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;
+    }
+    .video-card iframe{width:100%;height:100%;display:block;border:0}
+
+    /* ---------- small UI ---------- */
+    input[type="text"], textarea, select{
+      width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;font-size:14px;
+    }
+    button.primary{background:var(--accent);color:#fff;border:none;padding:9px 12px;border-radius:8px;cursor:pointer}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* ---------- secret zone (invisible) ---------- */
+    #secret-zone{
+      position:fixed;top:0;left:0;width:84px;height:84px;z-index:9999;background:rgba(255,0,0,0); /* make visible for testing: rgba(255,0,0,0.15) */
+    }
+
+    /* ---------- responsive tweaks ---------- */
+    @media (max-width:520px){
+      header.app-header{flex-direction:column;align-items:flex-start}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ---------- secret tap area (invisible) ---------- -->
+<div id="secret-zone" title="secret unlock zone"></div>
+
+<!-- ---------- fake "broken page" screen ---------- -->
+<div id="fake-screen">
+  <h1>Webpage not available</h1>
+  <p><b>The webpage could not be loaded because:</b></p>
+  <p>net::ERR_NAME_NOT_RESOLVED</p>
+</div>
+
+<!-- ---------- real site (hidden until unlocked) ---------- -->
+<div id="real-screen" style="display:none">
+
+  <div class="container">
+    <header class="app-header">
+      <div>
+        <h1>📚 Hostel Toolbox</h1>
+        <div class="sub">Videos • Search • Wikipedia • Calculator • Spotify • Notes • Dictionary</div>
+      </div>
+    </header>
+
+    <nav class="tools">
+      <button onclick="scrollToSection('videos')">Videos</button>
+      <button onclick="scrollToSection('google-search')">Google Search</button>
+      <button onclick="scrollToSection('wikipedia')">Wikipedia</button>
+      <button onclick="scrollToSection('calculator')">Calculator</button>
+      <button onclick="scrollToSection('spotify')">Spotify</button>
+      <button onclick="scrollToSection('notes')">Notes</button>
+      <button onclick="scrollToSection('dictionary')">Dictionary</button>
+    </nav>
+
+    <!-- ========== VIDEOS (generated from JSON) ========== -->
+  <!-- ...existing code... -->
+<section id="videos" class="tool">
+  <h2>🎥 Video Gallery</h2>
+  <p class="muted">Videos come from a JSON list — edit videos.json to add/remove.</p>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <button id="prevVideo" class="primary" style="min-width:48px;">&#8592;</button>
+    <div style="flex:1;">
+      <div id="video-slider" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;align-items:center;min-height:220px;"></div>
+      <div id="video-count" class="muted" style="text-align:center;margin-top:8px;"></div>
+      <div style="text-align:center;margin-top:8px;">
+        <input id="videoPageInput" type="number" min="1" value="1" style="width:60px;padding:4px 8px;border-radius:6px;border:1px solid #ddd;">
+        <button id="videoPageBtn" class="primary" style="padding:4px 12px;">Go</button>
+      </div>
+    </div>
+    <button id="nextVideo" class="primary" style="min-width:48px;">&#8594;</button>
+  </div>
+</section>
+<!-- ...existing code... -->
+
+    <!-- ========== GOOGLE CSE ========== -->
+    <section id="google-search" class="tool">
+      <h2>🔎 Google Search</h2>
+      <p class="muted">Powered by Google Custom Search.</p>
+
+      <!-- ========== user's provided Google code ========== -->
+      <script async src="https://cse.google.com/cse.js?cx=83b00b48939764439"></script>
+      <div class="gcse-search"></div>
+    </section>
+
+    <!-- ========== WIKIPEDIA QUICK SEARCH ========== -->
+    <section id="wikipedia" class="tool">
+      <h2>📚 Wikipedia Quick Search</h2>
+      <div class="row" style="gap:10px">
+        <input id="wikiQuery" type="text" placeholder="Search Wikipedia (e.g. Gravity)" />
+        <button class="primary" onclick="doWikiSearch()">Search</button>
+      </div>
+      <div style="height:12px"></div>
+      <iframe id="wikiFrame" src="about:blank" style="width:100%;height:420px;border:1px solid #e6e6e6;border-radius:8px;"></iframe>
+    </section>
+
+    <!-- ========== CALCULATOR (iframe) ========== -->
+    <section id="calculator" class="tool">
+      <h2>🧮 Calculator</h2>
+      <p class="muted">Calculator is embedded below.</p>
+      <iframe src="https://www.calculator.net/" style="width:100%;height:420px;border:1px solid #e6e6e6;border-radius:8px;"></iframe>
+    </section>
+
+    <!-- ========== SPOTIFY PLAYLIST ========== -->
+<!-- ...existing code... -->
+<section id="spotify" class="tool">
+  <h2>🎧 Spotify Gallery</h2>
+  <p class="muted">Spotify playlists and tracks come from a JSON list — edit spotify.json to add/remove.</p>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <button id="prevSpotify" class="primary" style="min-width:48px;">&#8592;</button>
+    <div style="flex:1;">
+      <div id="spotify-slider" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;align-items:center;min-height:220px;"></div>
+      <div id="spotify-count" class="muted" style="text-align:center;margin-top:8px;"></div>
+      <div style="text-align:center;margin-top:8px;">
+        <input id="spotifyPageInput" type="number" min="1" value="1" style="width:60px;padding:4px 8px;border-radius:6px;border:1px solid #ddd;">
+        <button id="spotifyPageBtn" class="primary" style="padding:4px 12px;">Go</button>
+      </div>
+    </div>
+    <button id="nextSpotify" class="primary" style="min-width:48px;">&#8594;</button>
+  </div>
+</section>
+<!-- ...existing code... -->
+    <!-- ========== NOTES (offline, localStorage) ========== -->
+    <section id="notes" class="tool">
+      <h2>📝 Notes (Saved locally)</h2>
+      <p class="muted">Notes are stored in your browser (localStorage). They stay on device.</p>
+      <textarea id="notesArea" rows="8" placeholder="Write your notes here..."></textarea>
+      <div style="height:8px"></div>
+      <button class="primary" onclick="saveNotes()">Save Notes</button>
+      <button style="margin-left:8px" onclick="clearNotes()">Clear</button>
+      <div id="notesSaved" class="muted" style="margin-top:8px"></div>
+    </section>
+
+    <!-- ========== DICTIONARY (dictionaryapi.dev) ========== -->
+    <section id="dictionary" class="tool">
+      <h2>📖 Dictionary</h2>
+      <div class="row">
+        <input id="dictQuery" type="text" placeholder="Type a word (e.g. serene)" />
+        <button class="primary" onclick="lookupWord()">Lookup</button>
+      </div>
+      <div id="dictResult" style="margin-top:12px"></div>
+      <hr>
+<h1>Dictionary Lookup</h1>
+<div class="row" style="margin-top:18px">
+  <input id="wordInput" type="text" placeholder="Type a word (e.g. serene)" />
+  <button class="primary" onclick="searchWord()">Search</button>
+</div>
+<div id="output" style="margin-top:12px"></div>
+
+    </section>
+<section id="wolfram-api" class="tool">
+  <h2>🧠 Wolfram Alpha Full Results</h2>
+  <div class="row" style="margin-bottom:10px;">
+    <input id="wolframApiQuery" type="text" placeholder="Type your question (e.g. integral of x^2)" />
+    <button class="primary" onclick="searchWolframApi()">Search</button>
+  </div>
+  <div id="wolframApiResult" style="margin-top:16px;"></div>
+</section>
+
+<section id="pdfs" class="tool">
+  <h2>📄 PDF Gallery</h2>
+  <p class="muted">PDFs come from a JSON list — edit drive.json to add/remove.</p>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <button id="prevPdf" class="primary" style="min-width:48px;">&#8592;</button>
+    <div style="flex:1;">
+      <div id="pdf-slider" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(600px,1fr));gap:32px;align-items:center;min-height:600px;"></div>
+      <div id="pdf-count" class="muted" style="text-align:center;margin-top:8px;font-weight:600;"></div>
+      <div style="text-align:center;margin-top:8px;">
+        <input id="pdfPageInput" type="number" min="1" value="1" style="width:60px;padding:4px 8px;border-radius:6px;border:1px solid #ddd;">
+        <button id="pdfPageBtn" class="primary" style="padding:4px 12px;">Go</button>
+      </div>
+    </div>
+    <button id="nextPdf" class="primary" style="min-width:48px;">&#8594;</button>
+  </div>
+</section>
+
+    <div style="height:36px"></div>
+    <footer class="muted" style="text-align:center;padding:18px 0">C-C-C • 😉</footer>
+
+  </div><!-- /container -->
+</div><!-- /real-screen -->
+
+<script>
+/* ================== SECRET UNLOCK ================== */
+// allow both touch and mouse events
+(function(){
+  const secretZone = document.getElementById('secret-zone');
+  const fake = document.getElementById('fake-screen');
+  const real = document.getElementById('real-screen');
+  let taps = 0, timer;
+
+  function registerTap(){
+    taps++;
+    clearTimeout(timer);
+    timer = setTimeout(()=> taps = 0, 5000); // reset after 5s inactivity
+    if(taps >= 5){
+      fake.style.display = 'none';
+      real.style.display = 'block';
+      // scroll to top of real screen
+      window.scrollTo(0,0);
+    }
+  }
+
+  secretZone.addEventListener('touchstart', registerTap);
+  secretZone.addEventListener('mousedown', registerTap); // for mouse clicks during dev
+})();
+
+/* ================== VIDEO GALLERY (from JSON array) ================== */
+let videoData = [];
+let currentIndex = 0;
+const videosToShow = 6; // Show up to 6 videos per page
+
+function renderVideoSlider() {
+  const slider = document.getElementById("video-slider");
+  const count = document.getElementById("video-count");
+  slider.innerHTML = "";
+  if (videoData.length === 0) {
+    slider.innerHTML = '<span class="muted">No videos found.</span>';
+    count.textContent = "";
+    return;
+  }
+  // Calculate actual number of videos to show on this page
+  let actualToShow = Math.min(videosToShow, videoData.length - currentIndex);
+  for (let i = 0; i < actualToShow; i++) {
+    const idx = currentIndex + i;
+    const video = videoData[idx];
+    // Responsive aspect ratio wrapper
+    const wrapper = document.createElement("div");
+    wrapper.style.aspectRatio = "16/9";
+    wrapper.style.background = "#000";
+    wrapper.style.borderRadius = "8px";
+    wrapper.style.overflow = "hidden";
+    wrapper.style.display = "flex";
+    wrapper.style.flexDirection = "column";
+    wrapper.style.alignItems = "center";
+    // Video iframe
+    const iframe = document.createElement("iframe");
+    iframe.width = "100%";
+    iframe.height = "100%";
+    iframe.style.height = "100%";
+    iframe.style.width = "100%";
+    iframe.frameBorder = "0";
+    iframe.allowFullscreen = true;
+    iframe.loading = "lazy";
+    iframe.src = video.type === "playlist"
+      ? `https://www.youtube.com/embed/videoseries?list=${video.id}`
+      : `https://www.youtube.com/embed/${video.id}`;
+    wrapper.appendChild(iframe);
+    // Optional: show title
+    if (video.title) {
+      const title = document.createElement("div");
+      title.textContent = video.title;
+      title.className = "muted";
+      title.style.textAlign = "center";
+      title.style.marginTop = "6px";
+      wrapper.appendChild(title);
+    }
+    slider.appendChild(wrapper);
+  }
+  // Show count (e.g., "13–18 of 18")
+  let start = currentIndex + 1;
+  let end = currentIndex + actualToShow;
+  count.textContent = `${start}–${end} of ${videoData.length}`;
+  // Update page input value
+  const pageInput = document.getElementById("videoPageInput");
+  if (pageInput) {
+    pageInput.value = Math.floor(currentIndex / videosToShow) + 1;
+    pageInput.max = Math.ceil(videoData.length / videosToShow);
+  }
+}
+
+function showPrevVideo() {
+  currentIndex -= videosToShow;
+  if (currentIndex < 0) currentIndex = 0;
+  renderVideoSlider();
+}
+function showNextVideo() {
+  currentIndex += videosToShow;
+  if (currentIndex >= videoData.length) currentIndex = videoData.length - (videoData.length % videosToShow || videosToShow);
+  renderVideoSlider();
+}
+
+function skipToPage(page) {
+  const totalPages = Math.ceil(videoData.length / videosToShow);
+  let pageNum = parseInt(page, 10);
+  if (isNaN(pageNum) || pageNum < 1) pageNum = 1;
+  if (pageNum > totalPages) pageNum = totalPages;
+  currentIndex = (pageNum - 1) * videosToShow;
+  renderVideoSlider();
+}
+
+document.getElementById("prevVideo").onclick = showPrevVideo;
+document.getElementById("nextVideo").onclick = showNextVideo;
+document.getElementById("videoPageBtn").onclick = function() {
+  const pageInput = document.getElementById("videoPageInput");
+  skipToPage(pageInput.value);
+};
+document.getElementById("videoPageInput").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") {
+    skipToPage(this.value);
+  }
+});
+
+// Fetch videos from videos.json
+fetch("videos.json")
+  .then(res => res.json())
+  .then(data => {
+    videoData = data;
+    currentIndex = 0;
+    renderVideoSlider();
+  })
+  .catch(err => {
+    document.getElementById("video-slider").innerText = "Failed to load videos.";
+    document.getElementById("video-count").textContent = "";
+    console.error(err);
+  });
+/* ================== WIKIPEDIA SEARCH ================== */
+function doWikiSearch(){
+  const q = document.getElementById('wikiQuery').value.trim();
+  if(!q) return alert('Type a search term first');
+  // load the Special:Search page in the iframe
+  const url = `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(q)}&go=Go`;
+  document.getElementById('wikiFrame').src = url;
+}
+/* ================== SPOTIFY PLAYLISTS ================== */
+// ...existing code...
+let spotifyData = [];
+let spotifyCurrentIndex = 0;
+const spotifyToShow = 3; // Show up to 3 Spotify items per page
+
+function renderSpotifySlider() {
+  const slider = document.getElementById("spotify-slider");
+  const count = document.getElementById("spotify-count");
+  slider.innerHTML = "";
+  if (spotifyData.length === 0) {
+    slider.innerHTML = '<span class="muted">No Spotify items found.</span>';
+    count.textContent = "";
+    return;
+  }
+  let actualToShow = Math.min(spotifyToShow, spotifyData.length - spotifyCurrentIndex);
+  for (let i = 0; i < actualToShow; i++) {
+    const idx = spotifyCurrentIndex + i;
+    const item = spotifyData[idx];
+    const wrapper = document.createElement("div");
+    wrapper.style.background = "#fff";
+    wrapper.style.borderRadius = "8px";
+    wrapper.style.overflow = "hidden";
+    wrapper.style.display = "flex";
+    wrapper.style.flexDirection = "column";
+    wrapper.style.alignItems = "center";
+    // Spotify iframe
+    const iframe = document.createElement("iframe");
+    iframe.width = "100%";
+    iframe.height = "80";
+    iframe.style.height = "80px";
+    iframe.style.width = "100%";
+    iframe.frameBorder = "0";
+    iframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+    if (item.type === "playlist") {
+      iframe.src = `https://open.spotify.com/embed/playlist/${item.id}`;
+      iframe.style.height = "380px";
+    } else if (item.type === "track") {
+      iframe.src = `https://open.spotify.com/embed/track/${item.id}`;
+      iframe.style.height = "120px";
+    } else {
+      wrapper.innerHTML = '<span class="muted">Unsupported Spotify type.</span>';
+      slider.appendChild(wrapper);
+      continue;
+    }
+    wrapper.appendChild(iframe);
+    // Optional: show name
+    if (item.name) {
+      const name = document.createElement("div");
+      name.textContent = item.name;
+      name.className = "muted";
+      name.style.textAlign = "center";
+      name.style.marginTop = "6px";
+      wrapper.appendChild(name);
+    }
+    slider.appendChild(wrapper);
+  }
+  // Show count
+  let start = spotifyCurrentIndex + 1;
+  let end = spotifyCurrentIndex + actualToShow;
+  count.textContent = `${start}–${end} of ${spotifyData.length}`;
+  // Update page input value
+  const pageInput = document.getElementById("spotifyPageInput");
+  if (pageInput) {
+    pageInput.value = Math.floor(spotifyCurrentIndex / spotifyToShow) + 1;
+    pageInput.max = Math.ceil(spotifyData.length / spotifyToShow);
+  }
+}
+
+function showPrevSpotify() {
+  spotifyCurrentIndex -= spotifyToShow;
+  if (spotifyCurrentIndex < 0) spotifyCurrentIndex = 0;
+  renderSpotifySlider();
+}
+function showNextSpotify() {
+  spotifyCurrentIndex += spotifyToShow;
+  if (spotifyCurrentIndex >= spotifyData.length) spotifyCurrentIndex = spotifyData.length - (spotifyData.length % spotifyToShow || spotifyToShow);
+  renderSpotifySlider();
+}
+function skipToSpotifyPage(page) {
+  const totalPages = Math.ceil(spotifyData.length / spotifyToShow);
+  let pageNum = parseInt(page, 10);
+  if (isNaN(pageNum) || pageNum < 1) pageNum = 1;
+  if (pageNum > totalPages) pageNum = totalPages;
+  spotifyCurrentIndex = (pageNum - 1) * spotifyToShow;
+  renderSpotifySlider();
+}
+
+document.getElementById("prevSpotify").onclick = showPrevSpotify;
+document.getElementById("nextSpotify").onclick = showNextSpotify;
+document.getElementById("spotifyPageBtn").onclick = function() {
+  const pageInput = document.getElementById("spotifyPageInput");
+  skipToSpotifyPage(pageInput.value);
+};
+document.getElementById("spotifyPageInput").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") {
+    skipToSpotifyPage(this.value);
+  }
+});
+
+// Fetch Spotify items from spotify.json
+fetch("spotify.json")
+  .then(res => res.json())
+  .then(data => {
+    spotifyData = data;
+    spotifyCurrentIndex = 0;
+    renderSpotifySlider();
+  })
+  .catch(err => {
+    document.getElementById("spotify-slider").innerText = "Failed to load Spotify items.";
+    document.getElementById("spotify-count").textContent = "";
+    console.error(err);
+  });
+// ...existing code...
+/* ================== NOTES (localStorage) ================== */
+const NOTES_KEY = 'hostel_toolbox_notes_v1';
+function saveNotes(){
+  const txt = document.getElementById('notesArea').value;
+  localStorage.setItem(NOTES_KEY, txt);
+  document.getElementById('notesSaved').textContent = 'Notes saved locally ✔';
+  setTimeout(()=> document.getElementById('notesSaved').textContent = '', 2500);
+}
+function clearNotes(){
+  if(confirm('Clear your saved notes?')) {
+    localStorage.removeItem(NOTES_KEY);
+    document.getElementById('notesArea').value = '';
+  }
+}
+// load existing notes on start
+document.addEventListener('DOMContentLoaded', ()=>{
+  const saved = localStorage.getItem(NOTES_KEY);
+  if(saved) document.getElementById('notesArea').value = saved;
+});
+
+/* ================== DICTIONARY LOOKUP ================== */
+async function lookupWord(){
+  const word = document.getElementById('dictQuery').value.trim();
+  const out = document.getElementById('dictResult');
+  out.innerHTML = 'Searching...';
+  if(!word){ out.innerHTML = '<span class="muted">Type a word.</span>'; return; }
+  try{
+    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+    if(!res.ok) throw new Error('not found');
+    const data = await res.json();
+    // show first entry
+    const entry = data[0];
+    let html = `<strong>${entry.word}</strong>`;
+    if(entry.phonetics && entry.phonetics[0] && entry.phonetics[0].text) html += ` <em>${entry.phonetics[0].text}</em>`;
+    html += '<div style="margin-top:8px">';
+    entry.meanings.slice(0,3).forEach(meaning=>{
+      html += `<div style="margin:8px 0"><strong>${meaning.partOfSpeech}</strong>`;
+      meaning.definitions.slice(0,3).forEach((d,i)=>{
+        html += `<div style="margin-left:8px">${i+1}. ${d.definition}${d.example?` <span class="muted"> — ${d.example}</span>`:''}</div>`;
+      });
+      html += `</div>`;
+    });
+    html += '</div>';
+    out.innerHTML = html;
+  }catch(err){
+    out.innerHTML = `<span class="muted">No entry found for "${word}".</span>`;
+  }
+}
+/* ================== DICTIONARY API (Ninjas) ================== */
+ async function searchWord() {
+    const word = document.getElementById("wordInput").value.trim();
+    const output = document.getElementById("output");
+    output.innerHTML = "Searching...";
+
+    const options = {
+      method: 'GET',
+      headers: {
+        'X-RapidAPI-Key': '2b8d191c29msh9a315aaca6c70c4p165a68jsn72cd0282cb1b',
+        'X-RapidAPI-Host': 'dictionary-by-api-ninjas.p.rapidapi.com'
+      }
+    };
+
+    try {
+      const res = await fetch(`https://dictionary-by-api-ninjas.p.rapidapi.com/v1/dictionary?word=${word}`, options);
+      const data = await res.json();
+
+      if (!data.definition) {
+        output.innerHTML = `<div class="error">No definition found for "${word}"</div>`;
+        return;
+      }
+
+      output.innerHTML = `
+        <strong>Word:</strong> ${word}<br><br>
+        <div class="definition"><strong>Definition:</strong> ${data.definition}</div>
+      `;
+    } catch (err) {
+      output.innerHTML = `<div class="error">Error: ${err.message}</div>`;
+    }
+  }
+  /* ================== WOLFRAM ALPHA QUERY ================== */
+async function searchWolframApi() {
+  const query = document.getElementById("wolframApiQuery").value.trim();
+  const resultDiv = document.getElementById("wolframApiResult");
+  if (!query) {
+    resultDiv.innerHTML = '<span class="muted">Type a query above.</span>';
+    return;
+  }
+  resultDiv.innerHTML = '<span class="muted">Searching...</span>';
+  try {
+    const appid = "THAYH5JQ7J";
+    const url = `https://srvr-l70t.onrender.com/proxy?url=${encodeURIComponent(
+  `https://api.wolframalpha.com/v2/query?input=${encodeURIComponent(query)}&appid=${appid}&output=XML`
+)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("API error");
+    const xmlText = await res.text();
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(xmlText, "text/xml");
+    const pods = xml.querySelectorAll("pod");
+    let html = "";
+    pods.forEach(pod => {
+      const title = pod.getAttribute("title");
+      html += `<div style="margin-bottom:18px;padding:12px;background:#f8f9fa;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+        <div style="font-weight:600;color:#0b84ff;margin-bottom:8px;">${title}</div>`;
+      pod.querySelectorAll("subpod").forEach(subpod => {
+        const plaintext = subpod.querySelector("plaintext")?.textContent;
+        const img = subpod.querySelector("img")?.getAttribute("src");
+        if (img) {
+          html += `<img src="${img}" alt="Result" style="max-width:100%;margin-bottom:8px;border-radius:6px;">`;
+        }
+        if (plaintext) {
+          html += `<div style="color:#333;font-size:15px;margin-bottom:6px;">${plaintext.replace(/\n/g, "<br>")}</div>`;
+        }
+      });
+      html += `</div>`;
+    });
+    if (!html) html = '<span class="muted">No results found.</span>';
+    resultDiv.innerHTML = html;
+  } catch (err) {
+    resultDiv.innerHTML = `<span class="muted">Error: ${err.message}</span>`;
+  }
+}
+/* ================== PDF GALLERY (from JSON array) ================== */
+let pdfData = [];
+let pdfCurrentIndex = 0;
+const pdfsToShow = 1; // Show 2 large PDFs per page
+function renderPdfSlider() {
+  const slider = document.getElementById("pdf-slider");
+  const count = document.getElementById("pdf-count");
+  slider.innerHTML = "";
+  if (pdfData.length === 0) {
+    slider.innerHTML = '<span class="muted">No files found.</span>';
+    count.textContent = "";
+    return;
+  }
+  let actualToShow = Math.min(pdfsToShow, pdfData.length - pdfCurrentIndex);
+  for (let i = 0; i < actualToShow; i++) {
+    const idx = pdfCurrentIndex + i;
+    const file = pdfData[idx];
+    const wrapper = document.createElement("div");
+    wrapper.style.background = "#fafbfc";
+    wrapper.style.borderRadius = "8px";
+    wrapper.style.boxShadow = "0 1px 4px rgba(0,0,0,0.04)";
+    wrapper.style.padding = "12px";
+    wrapper.style.display = "flex";
+    wrapper.style.flexDirection = "column";
+    wrapper.style.alignItems = "center";
+    wrapper.style.minHeight = "420px";
+    // Title
+    const title = document.createElement("div");
+    title.textContent = file.name || "Untitled";
+    title.style.fontWeight = "600";
+    title.style.color = "#333";
+    title.style.marginBottom = "8px";
+    title.style.textAlign = "center";
+    wrapper.appendChild(title);
+
+    // File viewer
+    if (file.type === "pdf") {
+      const iframe = document.createElement("iframe");
+      iframe.width = "800";
+      iframe.height = "600";
+      iframe.style.width = "100%";
+      iframe.style.height = "600px";
+      iframe.style.border = "1px solid #e6e6e6";
+      iframe.style.borderRadius = "6px";
+      iframe.style.background = "#fff";
+      iframe.style.marginBottom = "8px";
+      iframe.src = `https://docs.google.com/gview?url=https://drive.google.com/uc?id=${file.id}&embedded=true`;
+      iframe.frameBorder = "0";
+      iframe.allowFullscreen = true;
+      wrapper.appendChild(iframe);
+      // Download link
+      const link = document.createElement("a");
+      link.href = `https://drive.google.com/uc?id=${file.id}&export=download`;
+      link.textContent = "Download PDF";
+      link.target = "_blank";
+      link.style.marginTop = "6px";
+      wrapper.appendChild(link);
+    } else if (file.type === "doc") {
+      const iframe = document.createElement("iframe");
+      iframe.width = "800";
+      iframe.height = "600";
+      iframe.style.width = "100%";
+      iframe.style.height = "600px";
+      iframe.style.border = "1px solid #e6e6e6";
+      iframe.style.borderRadius = "6px";
+      iframe.style.background = "#fff";
+      iframe.style.marginBottom = "8px";
+      // Use Google Docs embed link
+      // Convert edit link to embed link if needed
+      let embedUrl = file.url;
+      if (embedUrl.includes("/edit")) {
+        embedUrl = embedUrl.replace("/edit", "/preview");
+      }
+      iframe.src = embedUrl;
+      iframe.frameBorder = "0";
+      iframe.allowFullscreen = true;
+      wrapper.appendChild(iframe);
+      // Open in Docs link
+      const link = document.createElement("a");
+      link.href = file.url;
+      link.textContent = "Open in Google Docs";
+      link.target = "_blank";
+      link.style.marginTop = "6px";
+      wrapper.appendChild(link);
+    } else {
+      wrapper.innerHTML += '<span class="muted">Unsupported file type.</span>';
+    }
+    slider.appendChild(wrapper);
+  }
+  // Show count (e.g., "3–4 of 4")
+  let start = pdfCurrentIndex + 1;
+  let end = pdfCurrentIndex + actualToShow;
+  count.textContent = `${start}–${end} of ${pdfData.length}`;
+  // Update page input value
+  const pageInput = document.getElementById("pdfPageInput");
+  if (pageInput) {
+    pageInput.value = Math.floor(pdfCurrentIndex / pdfsToShow) + 1;
+    pageInput.max = Math.ceil(pdfData.length / pdfsToShow);
+  }
+}
+// ...existing code...
+function showPrevPdf() {
+  pdfCurrentIndex -= pdfsToShow;
+  if (pdfCurrentIndex < 0) pdfCurrentIndex = 0;
+  renderPdfSlider();
+}
+function showNextPdf() {
+  pdfCurrentIndex += pdfsToShow;
+  if (pdfCurrentIndex >= pdfData.length) pdfCurrentIndex = pdfData.length - (pdfData.length % pdfsToShow || pdfsToShow);
+  renderPdfSlider();
+}
+function skipToPdfPage(page) {
+  const totalPages = Math.ceil(pdfData.length / pdfsToShow);
+  let pageNum = parseInt(page, 10);
+  if (isNaN(pageNum) || pageNum < 1) pageNum = 1;
+  if (pageNum > totalPages) pageNum = totalPages;
+  pdfCurrentIndex = (pageNum - 1) * pdfsToShow;
+  renderPdfSlider();
+}
+
+document.getElementById("prevPdf").onclick = showPrevPdf;
+document.getElementById("nextPdf").onclick = showNextPdf;
+document.getElementById("pdfPageBtn").onclick = function() {
+  const pageInput = document.getElementById("pdfPageInput");
+  skipToPdfPage(pageInput.value);
+};
+document.getElementById("pdfPageInput").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") {
+    skipToPdfPage(this.value);
+  }
+});
+
+// Fetch PDFs from drive.json
+fetch("drive.json")
+  .then(res => res.json())
+  .then(data => {
+    pdfData = data;
+    pdfCurrentIndex = 0;
+    renderPdfSlider();
+  })
+  .catch(err => {
+    document.getElementById("pdf-slider").innerText = "Failed to load PDFs.";
+    document.getElementById("pdf-count").textContent = "";
+    console.error(err);
+  });
+/* ================== small helper: scroll to sections =============== */
+function scrollToSection(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+</script>
+
+</body>
+</html>

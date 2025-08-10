@@ -16,7 +16,9 @@ const images = [
   { name: 'img6.png', memory: 'pancha' },
   { name: 'img8.jpg', memory: 'pancha' },
   { name: 'img9.jpg', memory: 'pancha' },
-  { name: 'img10.jpg', memory: 'pancha' }
+  { name: 'img10.jpg', memory: 'pancha' },
+  { name: 'img11.png', memory: 'pancha' },
+  { name: 'img12.png', memory: 'pancha' }
 ];
 let currentImages = images;  // current list to display
 let loadedImages = 0;
