@@ -176,7 +176,7 @@
 
     <!-- ========== SPOTIFY PLAYLIST ========== -->
 <!-- ...existing code... -->
-<section id="spotify" class="tool">
+<!---- <section id="spotify" class="tool">
   <h2>🎧 Spotify Gallery</h2>
   <p class="muted">Spotify playlists and tracks come from a JSON list — edit spotify.json to add/remove.</p>
   <div style="display:flex;align-items:center;gap:12px;">
@@ -191,7 +191,7 @@
     </div>
     <button id="nextSpotify" class="primary" style="min-width:48px;">&#8594;</button>
   </div>
-</section>
+</section> --->
 <!-- ...existing code... -->
     <!-- ========== NOTES (offline, localStorage) ========== -->
     <section id="notes" class="tool">
@@ -397,6 +397,7 @@ function doWikiSearch(){
 }
 /* ================== SPOTIFY PLAYLISTS ================== */
 // ...existing code...
+  /*
 let spotifyData = [];
 let spotifyCurrentIndex = 0;
 const spotifyToShow = 3; // Show up to 3 Spotify items per page
@@ -507,7 +508,7 @@ fetch("spotify.json")
     document.getElementById("spotify-slider").innerText = "Failed to load Spotify items.";
     document.getElementById("spotify-count").textContent = "";
     console.error(err);
-  });
+  });; */
 // ...existing code...
 /* ================== NOTES (localStorage) ================== */
 const NOTES_KEY = 'hostel_toolbox_notes_v1';
