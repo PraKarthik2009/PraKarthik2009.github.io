@@ -150,7 +150,7 @@ function handleSuccessfulUnlock() {
 
     setTimeout(() => {
         alert('Access granted! System unlocked.');
-        window.location.href = 's2wp469635632631aw32w3wq2awaRY.html';
+        window.location.href = 'I2wp469635632631aw32w3wq2awaRY';
     //    resetSystem();  no need here
     }, 1500);
 }
