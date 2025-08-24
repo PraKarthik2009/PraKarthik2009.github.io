@@ -1,6 +1,6 @@
 const PIN_LENGTH = 6;
 const MAX_ATTEMPTS = 5;
-const CORRECT_PIN = "592009"
+const CORRECT_PIN = "562009"
 
 const pinDots = document.querySelectorAll('.pin-dot');
 const keys = document.querySelectorAll('.key');
@@ -150,7 +150,7 @@ function handleSuccessfulUnlock() {
 
     setTimeout(() => {
         alert('Access granted! System unlocked.');
-        window.location.href = 'I2wp469635632631aw32w3wq2awaRY';
+        window.location.href = 'opa69635632631aw32w3wq2awaRY.html';
     //    resetSystem();  no need here
     }, 1500);
 }
