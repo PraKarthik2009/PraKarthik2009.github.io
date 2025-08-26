@@ -117,7 +117,34 @@
       }
     });
   </script>
-  
+  <script>
+  fetch("vi.json")
+    .then(res => res.json())
+    .then(data => {
+      const gallery = document.getElementById("video-gallery");
+
+      data.forEach(video => {
+        const iframe = document.createElement("iframe");
+        iframe.width = "560";
+        iframe.height = "315";
+        iframe.frameBorder = "0";
+        iframe.allowFullscreen = true;
+
+        iframe.src = video.type === "playlist"
+          ? `https://www.youtube.com/embed/videoseries?list=${video.id}`
+          : `https://www.youtube.com/embed/${video.id}`;
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "video-container not-pretty";
+        wrapper.appendChild(iframe);
+        gallery.appendChild(wrapper);
+      });
+    })
+    .catch(err => {
+      document.getElementById("video-gallery").innerText = "Failed to load videos.";
+      console.error(err);
+    });
+</script>
 
 </body>
 </html>
