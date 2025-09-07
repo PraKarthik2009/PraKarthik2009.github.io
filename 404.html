@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webpage not available</title>
+    <script>
+        // Try to go back if there is a referrer
+        if (document.referrer) {
+            window.history.back();
+        } else {
+            // No referrer, go to homepage
+            window.location.href = "/";
+        }
+    </script>
+</head>
+<body>
+    <h1>Webpage not available</h1>
+    <p><b>The webpage could not be loaded because:</b></p>
+    <p>net::ERR_NAME_NOT_RESOLVED</p>
+</body>
+</html>
