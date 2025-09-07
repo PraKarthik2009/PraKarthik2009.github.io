@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Gallery — Explore Different AIs</title>
+  <style>
+    :root {
+      --bg: #f4f6fa;
+      --card: #fff;
+      --accent: #0b84ff;
+      --muted: #666;
+      --maxw: 900px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      background: var(--bg);
+      color: #111;
+    }
+    .container {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 24px 12px 48px 12px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: linear-gradient(90deg, #0b84ff, #2db6ff);
+      color: #fff;
+      padding: 18px 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 18px rgba(8,24,40,0.07);
+    }
+    header h1 {
+      font-size: 2rem;
+      margin: 0;
+      letter-spacing: 1px;
+    }
+    header .sub {
+      opacity: 0.95;
+      font-size: 1rem;
+    }
+    .ai-list {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      justify-content: center;
+    }
+    .ai-card {
+      background: var(--card);
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(8,24,40,0.06);
+      padding: 24px 20px 18px 20px;
+      min-width: 260px;
+      max-width: 320px;
+      flex: 1 1 260px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow 0.2s;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    .ai-card:hover {
+      box-shadow: 0 6px 24px rgba(11,132,255,0.13);
+      border: 2px solid var(--accent);
+    }
+    .ai-card .ai-logo {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    .ai-card .ai-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .ai-card .ai-desc {
+      color: var(--muted);
+      font-size: 0.98rem;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    .ai-card button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.18s;
+    }
+    .ai-card button:hover {
+      background: #095ecb;
+    }
+    .ai-panel {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(8,24,40,0.07);
+      padding: 28px 22px 22px 22px;
+      margin-top: 18px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      display: none;
+      flex-direction: column;
+      align-items: stretch;
+      animation: fadeIn 0.4s;
+    }
+    .ai-panel.active {
+      display: flex;
+    }
+    .ai-panel .close-btn {
+      align-self: flex-end;
+      background: #eee;
+      color: #333;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+    .ai-panel .ai-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+    .ai-panel textarea {
+      width: 100%;
+      min-height: 60px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+      padding: 10px;
+      margin-bottom: 12px;
+      resize: vertical;
+    }
+    .ai-panel button.ask-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .ai-panel .ai-response {
+      background: #f4f6fa;
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 40px;
+      font-size: 1.05rem;
+      color: #222;
+      margin-top: 8px;
+      overflow-x: auto;
+    }
+    .ai-panel .ai-response code {
+      background: #e8eaf0;
+      color: #0b84ff;
+      border-radius: 5px;
+      padding: 2px 6px;
+      font-family: 'Fira Mono', 'Consolas', monospace;
+      font-size: 1em;
+    }
+    .ai-panel .ai-response pre {
+      background: #23272e;
+      color: #f8f8f2;
+      border-radius: 7px;
+      padding: 12px;
+      font-family: 'Fira Mono', 'Consolas', monospace;
+      font-size: 1em;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+    @media (max-width: 600px) {
+      .container { padding: 10px 2px 32px 2px; }
+      .ai-list { gap: 10px; }
+      .ai-card { min-width: 90vw; max-width: 98vw; }
+      .ai-panel { padding: 16px 4vw; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Python Code Executor UI -->
+    <section id="python-exec" style="background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(11,132,255,0.07);padding:28px 18px 18px 18px;margin-bottom:36px;max-width:1100px;margin-left:auto;margin-right:auto;">
+      <h2 style="margin-top:0;color:#0b84ff;font-size:1.3rem;">🐍 Python Code Runner</h2>
+      <div style="color:#bbb;font-size:1rem;margin-bottom:10px;">Type Python code below.Supports most Python 3, math, numpy, matplotlib, etc.</div>
+      <div id="py-editor" style="height:520px;border:1.5px solid #222;border-radius:10px;overflow:hidden;max-width:100%;margin-bottom:18px;"></div>
+      <div style="margin:12px 0 0 0;display:flex;gap:10px;align-items:center;">
+        <button id="py-run" style="background:#0b84ff;color:#fff;border:none;padding:8px 22px;border-radius:8px;font-weight:600;font-size:1rem;cursor:pointer;">Run ▶</button>
+        <button id="py-clear" style="background:#eee;color:#333;border:none;padding:8px 18px;border-radius:8px;font-weight:500;font-size:1rem;cursor:pointer;">Clear</button>
+        <span id="py-status" style="margin-left:18px;color:#888;font-size:0.98rem;"></span>
+      </div>
+      <div id="py-output-wrap" style="margin-top:24px;">
+        <div style="font-weight:600;color:#0b84ff;margin-bottom:6px;">Output:</div>
+        <pre id="py-output" style="background:#181c24;border-radius:8px;padding:18px;min-height:80px;font-size:1.08rem;color:#e6e6e6;overflow-x:auto;margin:0;"></pre>
+      </div>
+    </section>
+    <!-- End Python Code Executor UI -->
+    <header>
+      <div>
+        <h1>🤖 AI Gallery</h1>
+        <div class="sub">Explore and chat with different AIs — DeepSeek, OpenAI, Gemini</div>
+      </div>
+    </header>
+    <div class="ai-list" id="aiList">
+      <!-- AI cards will be rendered here -->
+    </div>
+    <div id="aiPanels">
+      <!-- AI panels will be rendered here -->
+    </div>
+    <footer class="muted" style="text-align:center;padding:24px 0 0 0;font-size:15px;">Coded with ❤️ !! Not To be publicised</footer>
+  </div>
+  <!-- CodeMirror (for Python editor) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/material-darker.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/python/python.min.js"></script>
+  <!-- Pyodide loader -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+  <script>
+    // --- Python Code Executor Logic ---
+    let pyodideReady = false;
+    let pyodide = null;
+    let editor = null;
+    async function loadPyodideAndSetup() {
+      document.getElementById('py-status').textContent = 'Loading Python (Pyodide)...';
+      pyodide = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/' });
+      // Add input() support: override builtins.input to call JS prompt
+      await pyodide.runPythonAsync(`
+import builtins
+from js import prompt as js_prompt
+def js_input(prompt=''):
+    return js_prompt(prompt)
+builtins.input = js_input
+`);
+      pyodideReady = true;
+      document.getElementById('py-status').textContent = 'Python ready!';
+    }
+    // Setup CodeMirror editor
+    function setupEditor() {
+      // Use CodeMirror for advanced editing, dark theme, big size
+      editor = CodeMirror(document.getElementById('py-editor'), {
+        value: '# Example: Fibonacci\ndef fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        print(a, end=\" \")\n        a, b = b, a+b\n\nfib(10)',
+        mode: 'python',
+        theme: 'material-darker',
+        lineNumbers: true,
+        indentUnit: 4,
+        tabSize: 4,
+        autofocus: true,
+        lineWrapping: true,
+        matchBrackets: true,
+        viewportMargin: Infinity,
+        extraKeys: { 'Ctrl-Enter': runPython }
+      });
+      editor.setSize("100%", "100%");
+    }
+    async function runPython() {
+      if (!pyodideReady) {
+        document.getElementById('py-status').textContent = 'Python not ready yet...';
+        return;
+      }
+      const code = editor.getValue();
+      const outputDiv = document.getElementById('py-output');
+      outputDiv.textContent = '';
+      document.getElementById('py-status').textContent = 'Running...';
+      try {
+        let output = '';
+        let error = '';
+        await pyodide.runPythonAsync(`import sys\nfrom io import StringIO\nsys._stdout, sys._stderr = sys.stdout, sys.stderr\nsys.stdout, sys.stderr = StringIO(), StringIO()`);
+        try {
+          await pyodide.runPythonAsync(code);
+        } catch (e) {
+          // error will be in stderr
+        }
+        output = await pyodide.runPythonAsync('sys.stdout.getvalue()');
+        error = await pyodide.runPythonAsync('sys.stderr.getvalue()');
+        await pyodide.runPythonAsync('sys.stdout, sys.stderr = sys._stdout, sys._stderr');
+        outputDiv.textContent = (output ? output : '') + (error ? '\n' + error : '');
+        document.getElementById('py-status').textContent = 'Done.';
+      } catch (err) {
+        outputDiv.textContent = err.message;
+        document.getElementById('py-status').textContent = 'Error.';
+      }
+    }
+    function clearPython() {
+      editor.setValue('');
+      document.getElementById('py-output').textContent = '';
+      document.getElementById('py-status').textContent = '';
+    }
+    window.addEventListener('DOMContentLoaded', async () => {
+      setupEditor();
+      await loadPyodideAndSetup();
+      document.getElementById('py-run').onclick = runPython;
+      document.getElementById('py-clear').onclick = clearPython;
+    });
+
+    // --- End Python Code Executor Logic ---
+
+    // AI definitions
+    // Grouped by provider/model family for clarity
+    const ais = [
+      // --- g4f.dev DeepSeek-v3 ---
+      // --- Gemini 1.5 models ---
+      {
+        id: "gemini-15-default",
+        name: "Gemini 1.5 (Default)",
+        logo: "✨",
+        desc: "Gemini 1.5 Flash (default)",
+        model: "1.5-flash-latest",
+        endpoint: "/gemini",
+        ask: async function(question) {
+          const res = await fetch("https://srvr-l70t.onrender.com/gemini", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: question })
+          });
+          const data = await res.json();
+          return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
+        }
+      },
+      {
+        id: "gemini-15-flash",
+        name: "Gemini 1.5 Flash",
+        logo: "⚡",
+        desc: "Gemini 1.5 Flash — use daily, fast & cheap (Flash key #1)",
+        model: "1.5-flash-latest",
+        endpoint: "/gemini/flash",
+        ask: async function(question) {
+          const res = await fetch("https://srvr-l70t.onrender.com/gemini/flash", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: question })
+          });
+          const data = await res.json();
+          return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
+        }
+      },
+      {
+        id: "gemini-15-flash2",
+        name: "Gemini 1.5 Flash 2",
+        logo: "⚡2",
+        desc: "Gemini 1.5 Flash — backup if Flash Key #1 is exhausted",
+        model: "1.5-flash-latest",
+        endpoint: "/gemini/flash2",
+        ask: async function(question) {
+          const res = await fetch("https://srvr-l70t.onrender.com/gemini/flash2", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: question })
+          });
+          const data = await res.json();
+          return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
+        }
+      },
+      {
+        id: "gemini-15-pro",
+        name: "Gemini 1.5 Pro",
+        logo: "💎",
+        desc: "Gemini 1.5 Pro — Google One Pro",
+        model: "1.5-pro-latest",
+        endpoint: "/gemini/pro",
+        ask: async function(question) {
+          const res = await fetch("https://srvr-l70t.onrender.com/gemini/pro", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: question })
+          });
+          const data = await res.json();
+          return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
+        }
+      },
+      // --- Gemini 2.5 models ---
+      {
+        id: "gemini-25-default",
+        name: "Gemini 2.5 (Default)",
+        logo: "✨2.5",
+        desc: "Gemini 2.5 Flash (default)",
+        model: "2.5-flash-latest",
+        endpoint: "/gemini/25",
+        ask: async function(question) {
+          const res = await fetch("https://srvr-l70t.onrender.com/gemini/25", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: question })
+          });
+          const data = await res.json();
+          return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
+        }
+      },
+      {
+        id: "gemini-25-flash",
+        name: "Gemini 2.5 Flash",
+        logo: "⚡2.5",
+        desc: "Gemini 2.5 Flash",
+        model: "2.5-flash-latest",
+        endpoint: "/gemini/flash25",
+        ask: async function(question) {
+          const res = await fetch("https://srvr-l70t.onrender.com/gemini/flash25", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: question })
+          });
+          const data = await res.json();
+          return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
+        }
+      },
+      {
+        id: "gemini-25-pro",
+        name: "Gemini 2.5 Pro",
+        logo: "💎2.5",
+        desc: "Gemini 2.5 Pro",
+        model: "2.5-pro-latest",
+        endpoint: "/gemini/pro25",
+        ask: async function(question) {
+          const res = await fetch("https://srvr-l70t.onrender.com/gemini/pro25", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: question })
+          });
+          const data = await res.json();
+          return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
+        }
+      }
+    ];
+
+    // Render AI cards
+    const aiList = document.getElementById("aiList");
+    const aiPanels = document.getElementById("aiPanels");
+    // --- Markdown rendering helper (basic, supports code blocks, bold, italics, links) ---
+    function renderMarkdown(md) {
+      if (!md) return "";
+      // Escape HTML
+      md = md.replace(/[&<>]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[s]));
+      // Code blocks (```)
+      md = md.replace(/```([\s\S]*?)```/g, (m, code) => `<pre><code>${code.replace(/\n$/,"")}</code></pre>`);
+      // Inline code
+      md = md.replace(/`([^`]+)`/g, (m, code) => `<code>${code}</code>`);
+      // Bold
+      md = md.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+      // Italic
+      md = md.replace(/\*([^*]+)\*/g, '<i>$1</i>');
+      // Links [text](url)
+      md = md.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+      // Newlines to <br> (except inside <pre>)
+      md = md.replace(/\n/g, '<br>');
+      return md;
+    }
+
+    // --- Streaming/typing effect ---
+    async function typeOutMarkdown(targetDiv, fullText, delay = 18) {
+      // For code blocks, type as block, not char-by-char
+      let i = 0;
+      let out = '';
+      let inCodeBlock = false;
+      while (i < fullText.length) {
+        // Detect code block start/end
+        if (fullText.slice(i, i+3) === '```') {
+          let end = fullText.indexOf('```', i+3);
+          if (end === -1) end = fullText.length;
+          out += fullText.slice(i, end+3);
+          i = end+3;
+          targetDiv.innerHTML = renderMarkdown(out);
+          await new Promise(r=>setTimeout(r, 200));
+          continue;
+        }
+        out += fullText[i];
+        targetDiv.innerHTML = renderMarkdown(out);
+        i++;
+        await new Promise(r=>setTimeout(r, delay));
+      }
+    }
+
+    // Group Gemini models visually in the UI
+    const geminiGroups = [
+      { label: 'Gemini 1.5', ids: ['gemini-15-default','gemini-15-flash','gemini-15-flash2','gemini-15-pro'] },
+      { label: 'Gemini 2.5', ids: ['gemini-25-default','gemini-25-flash','gemini-25-pro'] }
+    ];
+
+
+    // Render Gemini groups only, in a beautiful card grid
+    geminiGroups.forEach(group => {
+      const groupDiv = document.createElement('div');
+      groupDiv.style.margin = '32px 0 0 0';
+      groupDiv.style.background = '#f8fbff';
+      groupDiv.style.borderRadius = '14px';
+      groupDiv.style.boxShadow = '0 2px 12px rgba(11,132,255,0.07)';
+      groupDiv.style.padding = '18px 10px 10px 10px';
+      groupDiv.innerHTML = `<div style=\"font-weight:700;font-size:1.18rem;color:#0b84ff;margin-bottom:16px;text-align:center;letter-spacing:0.5px;\">${group.label}</div>`;
+      const grid = document.createElement('div');
+      grid.style.display = 'grid';
+      grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(300px, 1fr))';
+      grid.style.gap = '24px';
+      grid.style.alignItems = 'stretch';
+      group.ids.forEach(id => {
+        const ai = ais.find(a => a.id === id);
+        if (ai) renderAICard(ai, grid);
+      });
+      groupDiv.appendChild(grid);
+      aiList.appendChild(groupDiv);
+    });
+
+    function renderAICard(ai, parent) {
+      const card = document.createElement("div");
+      card.className = "ai-card";
+      card.innerHTML = `
+        <div class="ai-logo">${ai.logo}</div>
+        <div class="ai-title">${ai.name}</div>
+        <div class="ai-desc">${ai.desc}</div>
+        <div style="font-size:0.97em;color:#0b84ff;margin-bottom:6px;">${ai.model ? 'Model: <b>'+ai.model+'</b>' : ''}</div>
+        <div style="font-size:0.93em;color:#888;margin-bottom:6px;">${ai.endpoint ? 'Endpoint: <code>'+ai.endpoint+'</code>' : ''}</div>
+        <button>Chat</button>
+      `;
+      card.querySelector("button").onclick = () => openPanel(ai.id);
+      (parent || aiList).appendChild(card);
+      // Panel
+      const panel = document.createElement("div");
+      panel.className = "ai-panel";
+      panel.id = `panel-${ai.id}`;
+      panel.innerHTML = `
+        <button class="close-btn" onclick="closePanel('${ai.id}')">Close</button>
+        <div class="ai-title">${ai.logo} ${ai.name}</div>
+        <textarea id="input-${ai.id}" placeholder="Type your question..."></textarea>
+        <button class="ask-btn">Ask</button>
+        <div class="ai-response" id="response-${ai.id}"></div>
+      `;
+      panel.querySelector(".ask-btn").onclick = async function() {
+        const input = panel.querySelector("textarea").value.trim();
+        const respDiv = panel.querySelector(".ai-response");
+        if (!input) {
+          respDiv.textContent = "Type a question above.";
+          return;
+        }
+        respDiv.textContent = "Thinking...";
+        try {
+          const answer = await ai.ask(input);
+          respDiv.innerHTML = '';
+          await typeOutMarkdown(respDiv, answer);
+        } catch (err) {
+          respDiv.textContent = "Error: " + err.message;
+        }
+      };
+      aiPanels.appendChild(panel);
+    }
+    // Panel open/close logic
+    function openPanel(id) {
+      document.querySelectorAll('.ai-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + id).classList.add('active');
+      setTimeout(() => {
+        document.getElementById('panel-' + id).scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
+    function closePanel(id) {
+      document.getElementById('panel-' + id).classList.remove('active');
+    }
+    // Only load panel UI when opened (inspired by lop.html: don't load all at once)
+    // (Panels are hidden by default, only one is visible at a time)
+  </script>
+</body>
+</html>

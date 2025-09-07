@@ -91,6 +91,11 @@
     @media (max-width:520px){
       header.app-header{flex-direction:column;align-items:flex-start}
     }
+    .gcse-search, .gcse-search iframe {
+    position: relative !important; /* or absolute depending on your layout */
+    z-index: 1 !important;         /* make sure it's behind other elements */
+}
+
   </style>
 </head>
 <body>
@@ -112,7 +117,7 @@
     <header class="app-header">
       <div>
         <h1>📚 Hostel Toolbox</h1>
-        <div class="sub">Videos • Search • Wikipedia • Calculator • Spotify • Notes • Dictionary</div>
+        <div class="sub">Videos • Search • Wikipedia • Calculator • Notes • Dictionary</div>
       </div>
     </header>
 
@@ -121,7 +126,6 @@
       <button onclick="scrollToSection('google-search')">Google Search</button>
       <button onclick="scrollToSection('wikipedia')">Wikipedia</button>
       <button onclick="scrollToSection('calculator')">Calculator</button>
-      <button onclick="scrollToSection('spotify')">Spotify</button>
       <button onclick="scrollToSection('notes')">Notes</button>
       <button onclick="scrollToSection('dictionary')">Dictionary</button>
     </nav>
@@ -153,7 +157,36 @@
 
       <!-- ========== user's provided Google code ========== -->
       <script async src="https://cse.google.com/cse.js?cx=83b00b48939764439"></script>
-      <div class="gcse-search"></div>
+      <div id="google-wrapper" style="position:relative;z-index:1;overflow:hidden;">
+        <div class="gcse-search"></div>
+      </div>
+    </section>
+
+    <!-- ========== IFRAME LOADER & EXPANDABLE NOTES ========== -->
+    <section id="iframe-loader-section" class="tool">
+      <div style="margin-bottom:18px;">
+        <div class="expand-notes-box">
+          <div class="expand-notes-header">
+            <span style="font-weight:600;">🗒️ Notes</span>
+            <button id="toggleNotesBtn" class="expand-arrow" aria-label="Expand/collapse notes">&#9654;</button>
+          </div>
+          <pre id="expandNotesArea" style="display:none;white-space:pre-wrap;font-size:15px;background:#fff;border-radius:8px;border:1px solid #ddd;padding:10px;margin-top:8px;">
+  to use youtube embeds -
+https://www.youtube.com/embed/${video.id}
+https://www.youtube.com/embed/videoseries?list=${video.id}
+          </pre>
+        </div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <label for="iframeUrlInput" style="font-weight:600;">🔗 Load URL in box:</label>
+        <div style="display:flex;gap:8px;margin-top:6px;">
+          <input id="iframeUrlInput" type="text" placeholder="Paste or type a URL (e.g. https://example.com)" style="flex:1;" />
+          <button class="primary" id="loadIframeBtn">Load</button>
+        </div>
+      </div>
+      <div id="iframeBox" style="margin-top:12px;min-height:320px;">
+        <iframe id="customIframe" src="about:blank" style="width:100%;height:420px;border:1px solid #e6e6e6;border-radius:8px;background:#fff;"></iframe>
+      </div>
     </section>
 
     <!-- ========== WIKIPEDIA QUICK SEARCH ========== -->
@@ -316,8 +349,8 @@ function renderVideoSlider() {
     iframe.allowFullscreen = true;
     iframe.loading = "lazy";
     iframe.src = video.type === "playlist"
-      ? `https://www.youtube.com/embed/videoseries?list=${video.id}`
-      : `https://www.youtube.com/embed/${video.id}`;
+      ? `https://www.youtube.com/embed/videoseries?list=${video.id}&enablejsapi=1`
+      : `https://www.youtube.com/embed/${video.id}?enablejsapi=1`;
     wrapper.appendChild(iframe);
     // Optional: show title
     if (video.title) {
@@ -783,7 +816,142 @@ function scrollToSection(id){
   if(!el) return;
   el.scrollIntoView({behavior:'smooth',block:'start'});
 }
+
+// ========== IFRAME LOADER & EXPANDABLE NOTES LOGIC ==========
+document.addEventListener('DOMContentLoaded', function() {
+  // Expandable notes (prewritten, not editable)
+  const notesBtn = document.getElementById('toggleNotesBtn');
+  const notesArea = document.getElementById('expandNotesArea');
+  let expanded = false;
+  notesBtn.addEventListener('click', function() {
+    expanded = !expanded;
+    notesArea.style.display = expanded ? 'block' : 'none';
+    notesBtn.innerHTML = expanded ? '&#9660;' : '&#9654;';
+  });
+  // Iframe loader
+  document.getElementById('loadIframeBtn').addEventListener('click', function() {
+    const url = document.getElementById('iframeUrlInput').value.trim();
+    if (!url) return alert('Enter a URL to load.');
+    let validUrl = url;
+    if (!/^https?:\/\//i.test(validUrl)) validUrl = 'https://' + validUrl;
+    document.getElementById('customIframe').src = validUrl;
+  });
+  document.getElementById('iframeUrlInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') document.getElementById('loadIframeBtn').click();
+  });
+});
 </script>
 
 </body>
 </html>
+<div id="helpToolBtn" style="position:fixed;top:18px;right:18px;z-index:10001;">
+  <button id="helpBtnToggle" style="background:#0b84ff;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,0.08);cursor:pointer;">Help</button>
+</div>
+<div id="helpSidebar" style="display:none;position:fixed;top:0;right:0;height:100vh;width:100px;max-width:90vw;background:transparent;box-shadow:none;z-index:10000;padding:0;transition:right 0.2s;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 12px 6px 12px;border-bottom:1px solid #eee;">
+    <span style="font-size:18px;font-weight:600;">Help</span>
+    <button id="closeHelpSidebar" style="background:none;border:none;font-size:22px;cursor:pointer;">&times;</button>
+  </div>
+  <div style="padding:18px 0 0 0;display:flex;flex-direction:column;align-items:center;gap:18px;">
+    <button id="emergencyExitBtn" title="Emergency Exit" style="background:#ff4d4f;color:#fff;padding:12px;border:none;border-radius:50%;font-size:22px;cursor:pointer;width:48px;height:48px;display:flex;align-items:center;justify-content:center;"><span>🚨</span></button>
+    <button id="showFloatingBoxBtn" title="Show Link Box" style="background:#0b84ff;color:#fff;padding:12px;border:none;border-radius:50%;font-size:22px;cursor:pointer;width:48px;height:48px;display:flex;align-items:center;justify-content:center;"><span>🔗</span></button>
+    <button id="hideFloatingBoxBtn" title="Hide Link Box" style="background:#eee;color:#333;padding:12px;border:none;border-radius:50%;font-size:22px;cursor:pointer;width:48px;height:48px;display:flex;align-items:center;justify-content:center;"><span>❌</span></button>
+    <button id="turnOffAudioBtn" title="Turn Off Audio/Video" style="background:#222;color:#fff;padding:12px;border:none;border-radius:50%;font-size:22px;cursor:pointer;width:48px;height:48px;display:flex;align-items:center;justify-content:center;"><span>🔇</span></button>
+    <textarea id="floatingLinkBox" rows="3" placeholder="Paste links here..." style="width:90%;margin-top:12px;border-radius:7px;border:1px solid #ddd;padding:8px;font-size:15px;resize:vertical;display:none;"></textarea>
+  </div>
+</div>
+<div id="floatingBox" style="display:none;position:fixed;left:50%;transform:translateX(-50%);top:0;z-index:10003;width:340px;max-width:95vw;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,0.13);border-radius:10px;padding:12px 14px;transition:top 0.2s;">
+  <div style="display:flex;align-items:center;justify-content:space-between;">
+    <span style="font-weight:600;">🔗 Links</span>
+    <button id="closeFloatingBox" style="background:none;border:none;font-size:20px;cursor:pointer;">&times;</button>
+  </div>
+  <textarea id="floatingBoxText" rows="3" style="width:100%;margin-top:7px;border-radius:7px;border:1px solid #ddd;padding:8px;font-size:15px;resize:vertical;"></textarea>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const helpBtnToggle = document.getElementById('helpBtnToggle');
+  const sidebar = document.getElementById('helpSidebar');
+  const closeSidebar = document.getElementById('closeHelpSidebar');
+  const emergencyExitBtn = document.getElementById('emergencyExitBtn');
+  const fakeScreen = document.getElementById('fake-screen');
+  const realScreen = document.getElementById('real-screen');
+  const floatingLinkBox = document.getElementById('floatingLinkBox');
+  const showFloatingBoxBtn = document.getElementById('showFloatingBoxBtn');
+  const hideFloatingBoxBtn = document.getElementById('hideFloatingBoxBtn');
+  const floatingBox = document.getElementById('floatingBox');
+  const floatingBoxText = document.getElementById('floatingBoxText');
+  const closeFloatingBox = document.getElementById('closeFloatingBox');
+  const turnOffAudioBtn = document.getElementById('turnOffAudioBtn');
+
+  // Toggle sidebar
+  helpBtnToggle.addEventListener('click', function() {
+    if (sidebar.style.display === 'block') {
+      sidebar.style.display = 'none';
+    } else {
+      sidebar.style.display = 'block';
+    }
+  });
+  // Hide sidebar
+  closeSidebar.addEventListener('click', function() {
+    sidebar.style.display = 'none';
+  });
+  // Emergency Exit
+  emergencyExitBtn.addEventListener('click', function() {
+    realScreen.style.display = 'none';
+    fakeScreen.style.display = 'flex';
+    sidebar.style.display = 'none';
+    floatingBox.style.display = 'none';
+  });
+  // Floating link box logic
+  showFloatingBoxBtn.addEventListener('click', function() {
+    floatingBox.style.display = 'block';
+    // Place floating box at top center, above Google Search
+    const googleSearch = document.getElementById('google-search');
+    if (googleSearch) {
+      const rect = googleSearch.getBoundingClientRect();
+      floatingBox.style.position = 'fixed';
+      floatingBox.style.top = (rect.top + window.scrollY - floatingBox.offsetHeight - 24 > 0 ? rect.top + window.scrollY - floatingBox.offsetHeight - 24 : 18) + 'px';
+      floatingBox.style.left = '50%';
+      floatingBox.style.transform = 'translateX(-50%)';
+      floatingBox.style.right = '';
+      floatingBox.style.margin = '0';
+      floatingBoxText.value = floatingLinkBox.value;
+      // Make sure Google Search is not overlapping
+      googleSearch.style.zIndex = 1;
+      floatingBox.style.zIndex = 10003;
+    }
+  });
+  hideFloatingBoxBtn.addEventListener('click', function() {
+    floatingBox.style.display = 'none';
+  });
+  closeFloatingBox.addEventListener('click', function() {
+    floatingBox.style.display = 'none';
+  });
+  // Sync text between sidebar and floating box
+  floatingLinkBox.addEventListener('input', function() {
+    if (floatingBox.style.display === 'block') floatingBoxText.value = floatingLinkBox.value;
+  });
+  floatingBoxText.addEventListener('input', function() {
+    floatingLinkBox.value = floatingBoxText.value;
+  });
+  // Turn off all audio/video
+  turnOffAudioBtn.addEventListener('click', function() {
+    // Pause all <audio> and <video> tags
+    document.querySelectorAll('audio,video').forEach(function(el) {
+      if (!el.paused) el.pause();
+    });
+    // Pause all YouTube iframes
+    document.querySelectorAll('iframe').forEach(function(iframe) {
+      if (iframe.src && iframe.src.includes('youtube.com/embed')) {
+        iframe.contentWindow.postMessage(JSON.stringify({
+          event: 'command',
+          func: 'pauseVideo',
+          args: []
+        }), '*');
+      }
+    });
+  });
+});
+
+</script>
