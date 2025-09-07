@@ -5,12 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Webpage not available</title>
     <script>
-        // Try to go back if there is a referrer
+        function showMessage() {
+            // If nothing else happens, show the message (it's already in body)
+        }
+
         if (document.referrer) {
+            // Try to go back to the previous page
             window.history.back();
         } else {
-            // No referrer, go to homepage
-            window.location.href = "/";
+            // No referrer: randomly decide to redirect or show message
+            if (Math.random() < 0.5) {
+                window.location.href = "https://brilliantpala.org";
+            } else {
+                showMessage(); // stay on this page
+            }
         }
     </script>
 </head>
