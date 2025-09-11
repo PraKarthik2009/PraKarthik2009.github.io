@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Webpage not available</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./css/poke.css">
+</head>
+<body>
+
+  <!-- Fake Error Page -->
+  <div id="fake-screen">
+    <h1>Webpage not available</h1>
+    <p><b>The webpage could not be loaded because:</b></p>
+    <p>net::ERR_NAME_NOT_RESOLVED</p>
+  </div>
+
+  <!-- Hidden Real Content -->
+  <div id="real-screen">
+    <h1> ELF LISTINGS </h1>
+    <!-- Section 1: Tech Channel -->
+    <section>
+      <h2>JEE NEXUS </h2>
+      <div class="elfsight-app-84468327-a019-49a2-b287-58e004e72f30" data-elfsight-app-lazy></div>
+    </section>
+
+    
+  <!-- Tap Zone -->
+  <div id="secret-zone"></div>
+
+  <!-- Load Elfsight Platform Script -->
+  <script src="https://static.elfsight.com/platform/platform.js" async></script>
+
+  <!-- Tap Logic -->
+  <script>
+    let tapCount = 0;
+    let resetTimer;
+
+    document.getElementById("secret-zone").addEventListener("touchstart", () => {
+      tapCount++;
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(() => tapCount = 0, 5000);
+
+      if (tapCount >= 5) {
+        document.getElementById("fake-screen").style.display = "none";
+        document.getElementById("real-screen").style.display = "block";
+      }
+    });
+  </script>
+</body>
+</html>
