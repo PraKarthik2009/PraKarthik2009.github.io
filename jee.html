@@ -5,6 +5,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="./css/poke.css">
+  <style>
+    #secret-zone {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100vw; height: 100vh;
+      z-index: 9999;
+      background: transparent;
+    }
+    #real-screen {
+      display: none;
+    }
+  </style>
 </head>
 <body>
 
@@ -23,7 +35,7 @@
       <h2>JEE NEXUS </h2>
       <div class="elfsight-app-84468327-a019-49a2-b287-58e004e72f30" data-elfsight-app-lazy></div>
     </section>
-
+  </div>
     
   <!-- Tap Zone -->
   <div id="secret-zone"></div>
@@ -44,6 +56,7 @@
       if (tapCount >= 5) {
         document.getElementById("fake-screen").style.display = "none";
         document.getElementById("real-screen").style.display = "block";
+        document.getElementById("secret-zone").style.display = "none";
       }
     });
   </script>
