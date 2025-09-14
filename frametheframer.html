@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Simple Iframe Loader</title>
+  <style>
+    :root{
+      --bg:#f4f6f8;
+      --card:#fff;
+      --accent:#0b84ff;
+      --maxw:700px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:#111}
+    .container{max-width:var(--maxw);margin:0 auto;padding:24px}
+    .tool{
+      background:var(--card);
+      border-radius:10px;
+      padding:18px;
+      box-shadow:0 6px 18px rgba(8,24,40,0.04);
+      margin: 32px 0;
+    }
+    h2{margin:0 0 12px;font-size:18px}
+    label{font-weight:600;}
+    input[type="text"]{
+      width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;font-size:15px;
+    }
+    button.primary{
+      background:var(--accent);color:#fff;border:none;padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:600;
+    }
+    #iframeBox{margin-top:18px;min-height:320px;}
+    #customIframe{
+      width:100%;
+      height:420px;
+      border:1px solid #e6e6e6;
+      border-radius:8px;
+      background:#fff;
+    }
+    /* ====== Fake screen styling ====== */
+    #fake-screen {
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      width:100vw;height:100vh;
+      background:#fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+    }
+    #fake-screen h1{
+      font-size:2rem;
+      margin-bottom:12px;
+      color:#e00;
+    }
+    #fake-screen p{
+      font-size:16px;
+      color:#333;
+      margin:8px 0;
+      text-align:center;
+    }
+    #secret-zone {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      /* For development testing, you can use background:rgba(0,0,255,0.08) */
+      background: rgba(255,0,0,0);
+      z-index: 100000;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #secret-zone:active {
+      background: rgba(0,0,255,0.05);
+    }
+    #fake-screen .tap-info {
+      color: #aaa;
+      margin-top:20px;
+      font-size:15px;
+      text-align:center;
+    }
+    @media (max-width:720px){
+      .container{padding:8px;}
+      .tool{padding:10px;}
+      #customIframe{height:300px;}
+      #secret-zone { width: 90px; height: 90px;}
+    }
+  </style>
+</head>
+<body>
+  <!-- ====== FAKE SCREEN COVER ====== -->
+  <div id="fake-screen">
+    <h1>Webpage not available</h1>
+    <p><b>The webpage could not be loaded because:</b></p>
+    <p>net::ERR_NAME_NOT_RESOLVED</p>
+    <div id="secret-zone" title="Tap 5 times to unlock"></div>
+    <div class="tap-info">Tap the center 5 times to unlock</div>
+  </div>
+
+  <!-- ====== REAL APP ====== -->
+  <div id="real-app" style="display:none;">
+    <div class="container">
+      <header style="text-align:center;margin:0 0 24px;">
+        <h1 style="font-size:24px;margin-bottom:4px;">🔗 Simple Iframe Loader</h1>
+        <div style="color:#888;font-size:15px;">Paste any site link to preview it below</div>
+      </header>
+
+      <section id="iframe-loader-section" class="tool">
+        <label for="iframeUrlInput">Load URL in box:</label>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input id="iframeUrlInput" type="text" placeholder="Paste or type a URL (e.g. https://example.com)" style="flex:1;" />
+          <button class="primary" id="loadIframeBtn">Load</button>
+        </div>
+        <div id="iframeBox">
+          <iframe id="customIframe" src="about:blank"></iframe>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // ====== SECRET TAP TO UNLOCK ======
+    (function(){
+      const secretZone = document.getElementById('secret-zone');
+      const fake = document.getElementById('fake-screen');
+      const real = document.getElementById('real-app');
+      let taps = 0, timer;
+
+      function registerTap(){
+        taps++;
+        clearTimeout(timer);
+        timer = setTimeout(()=> taps = 0, 5000); // reset after 5s inactivity
+        if(taps >= 5){
+          fake.style.display = 'none';
+          real.style.display = 'block';
+          window.scrollTo(0,0);
+        }
+      }
+
+      secretZone.addEventListener('touchstart', registerTap);
+      secretZone.addEventListener('mousedown', registerTap); // for mouse clicks
+    })();
+
+    // ====== IFRAME LOADER ======
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('loadIframeBtn').addEventListener('click', function() {
+        const url = document.getElementById('iframeUrlInput').value.trim();
+        if (!url) return alert('Enter a URL to load.');
+        let validUrl = url;
+        if (!/^https?:\/\//i.test(validUrl)) validUrl = 'https://' + validUrl;
+        document.getElementById('customIframe').src = validUrl;
+      });
+      document.getElementById('iframeUrlInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') document.getElementById('loadIframeBtn').click();
+      });
+    });
+  </script>
+</body>
+</html>
