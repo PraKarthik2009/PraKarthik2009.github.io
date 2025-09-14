@@ -13,8 +13,8 @@
             // Try to go back to the previous page
             window.history.back();
         } else {
-            // No referrer: randomly decide to redirect or show message
-            if (Math.random() < 0.5) {
+            // No referrer: 99% chance to redirect, 1% to show message
+            if (Math.random() < 0.99) {
                 window.location.href = "https://brilliantpala.org";
             } else {
                 showMessage(); // stay on this page
